@@ -9,7 +9,7 @@ class PadnGrape::API::TestResource < Grape::API
       get do 
         {hello: "looking at test id #{params[:test_id]} here"}
       end
-      # mount TestResourceChild
+      # mount PadnGrape::API::TestResourceChild
     end
 
   end
