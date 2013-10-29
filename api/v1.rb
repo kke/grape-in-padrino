@@ -25,17 +25,17 @@ module PadnGrape
           logger.error "API << #{env['REQUEST_METHOD']} #{env['PATH_INFO']} -- #{error.class.name} -- #{error.message}"
           logger.info "API << Last error's backtrace:\n#{error.backtrace.join("\n")}"
           ENV['DEBUG'] && puts("API << #{env['REQUEST_METHOD']} #{env['PATH_INFO']} -- #{error.class.name} -- #{error.message} -- #{error.backtrace}")
-          
+
           json = { error: error.class.name.split('::').last, message: "#{error.message}#{Padrino.env.eql?(:test) ? error.backtrace : ""}"}.to_json
           code = error.class.name.to_s.match(/[Vv]alidation/) ? 400 : 500
-          
-          headers = 
+
+          headers =
           {
             'Content-Type' => 'application/json',
             'Access-Control-Allow-Origin' => '*',
             'Access-Control-Request-Method' => '*'
           }
-        end  
+        end
         rack_response(json, code, headers)
       end
 
