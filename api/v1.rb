@@ -1,4 +1,5 @@
-Dir[File.expand_path('../resources/**/*.rb', __FILE__)].each {|path| require path}
+require File.expand_path('../resources/test_resource_child.rb', __FILE__)
+require File.expand_path('../resources/test_resource.rb', __FILE__)
 
 module PadnGrape
   module API

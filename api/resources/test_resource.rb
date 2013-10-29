@@ -11,7 +11,7 @@ module PadnGrape
           get do
             {hello: "looking at test id #{params[:test_id]} here"}
           end
-          # mount PadnGrape::API::TestResourceChild
+          mount ::PadnGrape::API::TestResourceChild
         end
 
       end
