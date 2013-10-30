@@ -1,69 +1,36 @@
-Reproducing a problem
----------------------
+Grape running under Padrino
+---------------------------
 
-# Problem 1
+Began as an issue reproduction for Grape, which is now resolved.
 
-Routes are doubled, each grape route appears twice.
+Leaving this repository here for anyone interested.
 
-    $ rake routes
-    Application: PadnGrape::API::App
-      URL         REQUEST  PATH
-      (:APIv1)      GET    /api/padngrape/:version/hello(.:format)
-      (:APIv1)      GET    /api/padngrape/:version/test(.:format)
-      (:APIv1)      GET    /api/padngrape/:version/test/:test_id(.:format)
-      (:APIv1)      GET    /api/padngrape/:version/test(.:format)
-      (:APIv1)      GET    /api/padngrape/:version/test/:test_id(.:format)
+Partly borrowed from PadrinoEatsGrape at https://github.com/eivan/PadrinoEatsGrape
 
-    Application: PadnGrape::App
-      URL               REQUEST  PATH
-      (:index)            GET    /
-      (:test, :test)      GET    /test 
+This has an example of nested mounts, such as:
 
-Modifying the Gemfile by switching to old padrino and old grape removes
-this doubling problem:
+    # parent_resource.rb
+    resource :parent do
+      get do
+        # list parents
+      end
 
-    ruby-2.0.0-p247@padgrap [master*] /opt/reproduce-grape-problem $ bundle show padrino
-    /usr/local/rvm/gems/ruby-2.0.0-p247@padgrap/gems/padrino-0.11.4
-    ruby-2.0.0-p247@padgrap [master*] /opt/reproduce-grape-problem $ bundle show grape
-    /usr/local/rvm/gems/ruby-2.0.0-p247@padgrap/bundler/gems/grape-6e418d303463
-    ruby-2.0.0-p247@padgrap [master*] /opt/reproduce-grape-problem $ rake routes
+      route_param :parent_id do
+        get do
+          # show parent
+        end
 
-    Application: PadnGrape::API::App
-        URL         REQUEST  PATH
-        (:APIv1)      GET    /api/padngrape/:version/hello(.:format)
-        (:APIv1)      GET    /api/padngrape/:version/test(.:format)
-        (:APIv1)      GET    /api/padngrape/:version/test/:test_id(.:format)
-    
-    Application: PadnGrape::App
-        URL               REQUEST  PATH
-        (:index)            GET    /
-        (:test, :test)      GET    /test
-    
+        mount Children
+      end
+    end
 
-# Problem 2
+    # children_resource.rb
+    resource :children do
+      get do
+        # list children
+        # for params[:parent_id]
+      end
+    end
 
-Uncomment the following line in api/resources/test_resource.rb   :
-
-    # mount TestResourceChild
-
-And the route should look like:
-
-      (:APIv1)      GET    /api/padngrape/:version/test/:test_id/children(.:format)
-
-And this should work:
-
-    GET /api/padngrape/v1/test/123-test-id/children
-
-But instead we get:
-
-    Application: PadnGrape::API::App
-      URL         REQUEST  PATH
-      (:APIv1)      GET    /api/padngrape/:version/hello(.:format)
-      (:APIv1)      GET    /api/padngrape/:version/test(.:format)
-      (:APIv1)      GET    /api/padngrape/:version/test/:test_id(.:format)
-      (:APIv1)      GET    /api/padngrape/:version/test/:test_id/test(.:format)
-      (:APIv1)      GET    /api/padngrape/:version/test/:test_id/test/:test_id(.:format)
-      (:APIv1)      GET    /api/padngrape/:version/test/:test_id/test/:test_id/test/:test_id/children(.:format)
-      (:APIv1)      GET    /api/padngrape/:version/test/:test_id/test(.:format)
-      (:APIv1)      GET    /api/padngrape/:version/test/:test_id/test/:test_id(.:format)
-      (:APIv1)      GET    /api/padngrape/:version/test/:test_id/test/:test_id/test/:test_id/children(.:format)
+    # Which results to a route like:
+    # /api/:version/parent/:parent_id/children
